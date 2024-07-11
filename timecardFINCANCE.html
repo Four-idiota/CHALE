@@ -68,6 +68,25 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Type Counts Section -->
+            <div id="typeCounts" class="hidden mt-4">
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Type Counts</h3>
+                <div id="typeCountsContent" class="grid grid-cols-2 gap-4">
+                    <div id="fullDayCount" class="text-sm">
+                        <span class="font-semibold">Full Day:</span> <span id="fullDayCountValue">0</span>
+                    </div>
+                    <div id="halfDayCount" class="text-sm">
+                        <span class="font-semibold">Half Day:</span> <span id="halfDayCountValue">0</span>
+                    </div>
+                    <div id="leaveCount" class="text-sm">
+                        <span class="font-semibold">Leave:</span> <span id="leaveCountValue">0</span>
+                    </div>
+                    <div id="holidayCount" class="text-sm">
+                        <span class="font-semibold">Holiday:</span> <span id="holidayCountValue">0</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -79,12 +98,20 @@
         const monthlySalaryInput = document.getElementById('monthlySalaryInput');
         const calculateSalaryBtn = document.getElementById('calculateSalaryBtn');
         const salaryResult = document.getElementById('salaryResult');
+        const typeCountsSection = document.getElementById('typeCounts');
+        const fullDayCountValue = document.getElementById('fullDayCountValue');
+        const halfDayCountValue = document.getElementById('halfDayCountValue');
+        const leaveCountValue = document.getElementById('leaveCountValue');
+        const holidayCountValue = document.getElementById('holidayCountValue');
 
         viewTimecardBtn.addEventListener('click', () => {
             const selectedEmployee = employeeSelect.value;
             // Generate random timecard data for Employee A
             const sampleTimecardData = generateSampleTimecardData(selectedEmployee);
             renderTimecard(sampleTimecardData);
+
+            // Show the type counts section
+            typeCountsSection.classList.remove('hidden');
         });
 
         calculateSalaryBtn.addEventListener('click', () => {
@@ -92,10 +119,32 @@
             const timecardRows = timecardBody.querySelectorAll('tr');
             let totalHours = 0;
             let totalDeductions = 0;
+            let fullDayCount = 0;
+            let halfDayCount = 0;
+            let leaveCount = 0;
+            let holidayCount = 0;
 
             timecardRows.forEach(row => {
                 const type = row.cells[1].textContent;
                 const hours = parseFloat(row.cells[2].textContent);
+
+                // Count each type
+                switch (type) {
+                    case 'Full Day':
+                        fullDayCount++;
+                        break;
+                    case 'Half Day':
+                        halfDayCount++;
+                        break;
+                    case 'Leave':
+                        leaveCount++;
+                        break;
+                    case 'Holiday':
+                        holidayCount++;
+                        break;
+                    default:
+                        break;
+                }
 
                 // Deduct for holidays, leaves, and half-days
                 switch (type) {
@@ -122,6 +171,12 @@
             salaryResult.innerHTML = `
                 <p class="text-lg font-semibold text-gray-800">Net Salary: ₹${netSalary.toFixed(2)}</p>
             `;
+
+            // Update type counts in the UI
+            fullDayCountValue.textContent = fullDayCount;
+            halfDayCountValue.textContent = halfDayCount;
+            leaveCountValue.textContent = leaveCount;
+            holidayCountValue.textContent = holidayCount;
         });
 
         function generateSampleTimecardData(employee) {

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Timecard</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FullCalendar CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" rel="stylesheet">
+  <style>
+    /* Custom CSS for styling */
+    body {
+      margin: 20px;
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f9fa;
+    }
+    #calendar {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .fc-day {
+      cursor: pointer;
+      position: relative;
+    }
+    .fc-day.fc-today {
+      background-color: #007bff !important;
+      color: #fff !important;
+    }
+    .fc-day-number {
+      font-size: 16px;
+    }
+    .fc-event {
+      background-color: #28a745;
+      border-color: #28a745;
+      color: #fff;
+      border-radius: 4px;
+      padding: 2px 8px;
+    }
+    .fc-event-absent {
+      background-color: #dc3545;
+      border-color: #dc3545;
+    }
+    .fc-event-half {
+      background-color: #ffc107;
+      border-color: #ffc107;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="text-center mb-4">Employee Timecard</h2>
+    <div id="calendar"></div>
+  </div>
+
+  <!-- Bootstrap JS and jQuery -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Moment.js for FullCalendar -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+  <!-- FullCalendar JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('#calendar').fullCalendar({
+        header: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'month' // Only display month view
+        },
+        editable: false, // Disable editing events
+        events: [
+          {
+            title: 'Full Day',
+            start: '2024-07-10',
+            className: 'fc-event fc-event-full'
+          },
+          {
+            title: 'Half Day',
+            start: '2024-07-12T12:30:00',
+            className: 'fc-event fc-event-half'
+          },
+          {
+            title: 'Absent',
+            start: '2024-07-14',
+            className: 'fc-event fc-event-absent'
+          }
+          // Add more events as needed
+        ]
+      });
+    });
+  </script>
+</body>
+</html>

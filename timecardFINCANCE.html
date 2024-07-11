@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Timecards</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Additional styles can be added here */
+    </style>
+</head>
+
+<body class="bg-gray-200 p-6">
+    <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="px-6 py-4 flex">
+            <div class="w-2/3 pr-6">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-2">Employee Timecards</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <label for="employeeSelect" class="block text-sm font-medium text-gray-700">Select Employee:</label>
+                        <select id="employeeSelect"
+                            class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="">Select an employee...</option>
+                            <option value="employee_a">Employee A</option>
+                            <option value="employee_b">Employee B</option>
+                            <!-- Add more employees as needed -->
+                        </select>
+                    </div>
+                    <div>
+                        <button id="viewTimecardBtn"
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            View Timecard
+                        </button>
+                    </div>
+                </div>
+
+                <div id="timecard" class="hidden mt-4">
+                    <!-- Timecard will be dynamically populated here -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border border-gray-300">
+                            <thead class="bg-gray-800 text-white">
+                                <tr>
+                                    <th class="py-3 px-4 text-left">Date</th>
+                                    <th class="py-3 px-4 text-left">Type</th>
+                                    <th class="py-3 px-4 text-left">Hours</th>
+                                    <th class="py-3 px-4 text-left">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="timecardBody" class="text-gray-700">
+                                <!-- Sample timecard rows for demonstration -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="typeCountsSection" class="w-1/3 pl-6 hidden">
+                <div id="typeCounts" class="mt-4">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Type Counts</h3>
+                    <div id="typeCountsList" class="grid grid-cols-2 gap-2">
+                        <!-- Type counts will be dynamically populated here -->
+                    </div>
+                </div>
+
+                <div id="salarySection" class="mt-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Calculate Salary</h3>
+                    <div class="flex items-center space-x-4">
+                        <label for="monthlySalaryInput" class="text-sm font-medium text-gray-700">Monthly Salary:</label>
+                        <input type="number" id="monthlySalaryInput"
+                            class="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            placeholder="Enter salary">
+                        <button id="calculateSalaryBtn"
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Calculate Salary
+                        </button>
+                    </div>
+                    <div id="salaryResult" class="mt-2">
+                        <!-- Salary calculation result will be displayed here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const employeeSelect = document.getElementById('employeeSelect');
+        const viewTimecardBtn = document.getElementById('viewTimecardBtn');
+        const timecardDiv = document.getElementById('timecard');
+        const timecardBody = document.getElementById('timecardBody');
+        const monthlySalaryInput = document.getElementById('monthlySalaryInput');
+        const calculateSalaryBtn = document.getElementById('calculateSalaryBtn');
+        const salaryResult = document.getElementById('salaryResult');
+        const typeCountsSection = document.getElementById('typeCountsSection');
+        const typeCountsList = document.getElementById('typeCountsList');
+
+        employeeSelect.addEventListener('change', () => {
+            const selectedEmployee = employeeSelect.value;
+            if (selectedEmployee) {
+                typeCountsSection.classList.remove('hidden');
+            } else {
+                typeCountsSection.classList.add('hidden');
+            }
+        });
+
+        viewTimecardBtn.addEventListener('click', () => {
+            const selectedEmployee = employeeSelect.value;
+            if (!selectedEmployee) {
+                alert('Please select an employee.');
+                return;
+            }
+
+            // Generate random timecard data for the selected employee
+            const sampleTimecardData = generateSampleTimecardData(selectedEmployee);
+            renderTimecard(sampleTimecardData);
+
+            // Calculate and display type counts
+            const typeCounts = calculateTypeCounts(sampleTimecardData);
+            displayTypeCounts(typeCounts);
+
+            // Show the type counts section
+            typeCountsSection.classList.remove('hidden');
+        });
+
+        calculateSalaryBtn.addEventListener('click', () => {
+            const monthlySalary = parseFloat(monthlySalaryInput.value);
+            const timecardRows = timecardBody.querySelectorAll('tr');
+            let totalHours = 0;
+            let totalDeductions = 0;
+
+            timecardRows.forEach(row => {
+                const type = row.cells[1].textContent;
+                const hours = parseFloat(row.cells[2].textContent);
+
+                // Deduct for holidays, leaves, and half-days
+                switch (type) {
+                    case 'Holiday':
+                        totalDeductions += hours * (monthlySalary / (30 * 8)); // Assuming 8 working hours per day
+                        break;
+                    case 'Leave':
+                        totalDeductions += hours * (monthlySalary / (30 * 8)); // Adjust for half-day accordingly
+                        break;
+                    case 'Half Day':
+                        totalDeductions += hours * (monthlySalary / (30 * 8 * 2)); // Half-day deduction
+                        break;
+                    case 'Full Day':
+                        totalHours += hours; // Counting full day hours
+                        break;
+                    default:
+                        break;
+                }
+
+                totalHours += hours;
+            });
+
+            const netSalary = monthlySalary - totalDeductions;
+            salaryResult.innerHTML = `
+                <p class="text-lg font-semibold text-gray-800">Net Salary: ₹${netSalary.toFixed(2)}</p>
+            `;
+        });
+
+        function generateSampleTimecardData(employee) {
+            // Simulated timecard data for a whole month (randomized)
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+            const timecardData = [];
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                const type = getRandomType(); // Function to get a random type (Full Day, Half Day, Leave, Holiday)
+                const hours = getRandomHours(type); // Function to get random hours based on type
+                const status = 'Approved'; // Default status for simplicity
+
+                timecardData.push({ date, type, hours, status });
+            }
+
+            return timecardData;
+        }
+
+        function renderTimecard(timecardData) {
+            // Clear previous timecard entries if any
+            timecardBody.innerHTML = '';
+
+            // Render new timecard entries
+            timecardData.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-3 px-4 border border-gray-300">${entry.date}</td>
+                    <td class="py-3 px-4 border border-gray-300">${entry.type}</td>
+                    <td class="py-3 px-4 border border-gray-300">${entry.hours}</td>
+                    <td class="py-3 px-4 border border-gray-300">${entry.status}</td>
+                `;
+                timecardBody.appendChild(row);
+            });
+
+            // Show the timecard section
+            timecardDiv.classList.remove('hidden');
+        }
+
+        function calculateTypeCounts(timecardData) {
+            const typeCounts = {
+                'Full Day': 0,
+                'Half Day': 0,
+                'Leave': 0,
+                'Holiday': 0
+            };
+
+            timecardData.forEach(entry => {
+                typeCounts[entry.type] += 1;
+            });
+
+            return typeCounts;
+        }
+
+        function displayTypeCounts(typeCounts) {
+            // Clear previous type counts if any
+            typeCountsList.innerHTML = '';
+
+            // Render new type counts
+            Object.entries(typeCounts).forEach(([type, count]) => {
+                const listItem = document.createElement('div');
+                listItem.innerHTML = `
+                    <span class="text-sm font-medium text-gray-700">${type}: ${count}</span>
+                `;
+                typeCountsList.appendChild(listItem);
+            });
+        }
+
+        function getRandomType() {
+            const types = ['Full Day', 'Half Day', 'Leave', 'Holiday'];
+            return types[Math.floor(Math.random() * types.length)];
+        }
+
+        function getRandomHours(type) {
+            switch (type) {
+                case 'Full Day':
+                    return 8;
+                case 'Half Day':
+                    return 4;
+                case 'Leave':
+                    return Math.random() < 0.5 ? 4 : 8; // Randomly choose half-day or full-day leave
+                case 'Holiday':
+                    return 0; // No working hours for holiday
+                default:
+                    return 0;
+            }
+        }
+    </script>
+</body>
+
+</html>

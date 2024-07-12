@@ -1,98 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Employee Timecard</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <!-- FullCalendar CSS -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" rel="stylesheet">
-  <style>
-    /* Custom CSS for styling */
-    body {
-      margin: 20px;
-      font-family: 'Arial', sans-serif;
-      background-color: #f8f9fa;
-    }
-    #calendar {
-      max-width: 800px;
-      margin: 0 auto;
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .fc-day {
-      cursor: pointer;
-      position: relative;
-    }
-    .fc-day.fc-today {
-      background-color: #007bff !important;
-      color: #fff !important;
-    }
-    .fc-day-number {
-      font-size: 16px;
-    }
-    .fc-event {
-      background-color: #28a745;
-      border-color: #28a745;
-      color: #fff;
-      border-radius: 4px;
-      padding: 2px 8px;
-    }
-    .fc-event-absent {
-      background-color: #dc3545;
-      border-color: #dc3545;
-    }
-    .fc-event-half {
-      background-color: #ffc107;
-      border-color: #ffc107;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Timecard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .calendar-table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .calendar-table th, .calendar-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            width: 14.28%;
+            height: 100px; /* Increase cell height for better visibility */
+        }
+        .calendar-table th {
+            background-color: #f2f2f2;
+        }
+        .sidebar {
+            background-color: #f8fafc;
+            border-left: 1px solid #ddd;
+            padding: 20px;
+            margin-left: 20px;
+        }
+        .timecard-full-day {
+            background-color: #c6f6d5; /* Green */
+        }
+        .timecard-half-day {
+            background-color: #fbd38d; /* Yellow */
+        }
+        .timecard-absent {
+            background-color: #fed7d7; /* Red */
+        }
+        .timecard-other {
+            background-color: #bee3f8; /* Blue */
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f8fafc;
+            border-bottom: 1px solid #ddd;
+        }
+        .calendar-header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .calendar-header button {
+            background-color: #4a5568;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
 </head>
-<body>
-  <div class="container">
-    <h2 class="text-center mb-4">Employee Timecard</h2>
-    <div id="calendar"></div>
-  </div>
+<body class="bg-gray-100">
 
-  <!-- Bootstrap JS and jQuery -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <!-- Moment.js for FullCalendar -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-  <!-- FullCalendar JS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
-  <script>
-    $(document).ready(function() {
-      $('#calendar').fullCalendar({
-        header: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'month' // Only display month view
-        },
-        editable: false, // Disable editing events
-        events: [
-          {
-            title: 'Full Day',
-            start: '2024-07-10',
-            className: 'fc-event fc-event-full'
-          },
-          {
-            title: 'Half Day',
-            start: '2024-07-12T12:30:00',
-            className: 'fc-event fc-event-half'
-          },
-          {
-            title: 'Absent',
-            start: '2024-07-14',
-            className: 'fc-event fc-event-absent'
-          }
-          // Add more events as needed
-        ]
-      });
+<div class="container mx-auto mt-10">
+    <div class="calendar-header">
+        <h2>Employee Timecard</h2>
+        <button onclick="generateCalendar()">Refresh Calendar</button>
+    </div>
+
+    <div class="text-center mb-5">
+        <p class="text-gray-600">Click on a date to select and fill out your timecard details</p>
+    </div>
+
+    <div class="flex">
+        <div class="w-3/4 bg-white shadow-md rounded-lg p-6">
+            <div class="overflow-x-auto">
+                <table class="calendar-table w-full">
+                    <thead>
+                        <tr>
+                            <th>Sun</th>
+                            <th>Mon</th>
+                            <th>Tue</th>
+                            <th>Wed</th>
+                            <th>Thu</th>
+                            <th>Fri</th>
+                            <th>Sat</th>
+                        </tr>
+                    </thead>
+                    <tbody id="calendarBody">
+                        <!-- Calendar rows will be generated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="w-1/4 bg-white shadow-md rounded-lg p-6 sidebar">
+            <h3 class="text-xl font-bold mb-4">Timecard Details</h3>
+            <div id="timecardOptions">
+                <p class="text-gray-600">Select a date from the calendar to enter your timecard details.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        generateCalendar();
     });
-  </script>
+
+    let selectedDate;
+
+    function generateCalendar() {
+        const calendarBody = document.getElementById('calendarBody');
+        calendarBody.innerHTML = ''; // Clear existing content
+        const daysInMonth = new Date(2024, 7, 0).getDate(); // Assuming July 2024
+        let date = 1;
+
+        for (let i = 0; i < 6; i++) {
+            const row = document.createElement('tr');
+            for (let j = 0; j < 7; j++) {
+                const cell = document.createElement('td');
+                if (i === 0 && j < new Date(2024, 6, 1).getDay()) {
+                    cell.innerHTML = "";
+                } else if (date > daysInMonth) {
+                    break;
+                } else {
+                    cell.innerHTML = date;
+                    cell.setAttribute('id', `day-${date}`);
+                    cell.classList.add('cursor-pointer', 'hover:bg-blue-200');
+                    cell.addEventListener('click', function() {
+                        selectDate(date);
+                    });
+                    date++;
+                }
+                row.appendChild(cell);
+            }
+            calendarBody.appendChild(row);
+        }
+    }
+
+    function selectDate(date) {
+        selectedDate = date;
+        const timecardOptions = document.getElementById('timecardOptions');
+        timecardOptions.innerHTML = `
+            <h4 class="text-lg font-semibold mb-3">Date: ${date} July 2024</h4>
+            <label class="block mb-2">
+                <span class="text-gray-700">Type of Leave</span>
+                <select class="form-select mt-1 block w-full" id="leaveType">
+                    <option value="">Select Leave Type</option>
+                    <option value="full-day">Full Day</option>
+                    <option value="half-day">Half Day</option>
+                    <option value="absent">Absent</option>
+                    <option value="other">Other</option>
+                </select>
+            </label>
+            <label class="block mb-2">
+                <span class="text-gray-700">Comments</span>
+                <textarea class="form-textarea mt-1 block w-full" id="leaveComments" rows="3"></textarea>
+            </label>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded-md mt-3" onclick="saveTimecard()">Save</button>
+        `;
+    }
+
+    function saveTimecard() {
+        const leaveType = document.getElementById('leaveType').value;
+        const leaveComments = document.getElementById('leaveComments').value;
+        const cell = document.getElementById(`day-${selectedDate}`);
+
+        // Remove existing classes
+        cell.classList.remove('timecard-full-day', 'timecard-half-day', 'timecard-absent', 'timecard-other');
+
+        // Update cell based on selected leave type
+        let leaveText = '';
+        switch (leaveType) {
+            case 'full-day':
+                cell.classList.add('timecard-full-day');
+                leaveText = 'Full Day';
+                break;
+            case 'half-day':
+                cell.classList.add('timecard-half-day');
+                leaveText = 'Half Day';
+                break;
+            case 'absent':
+                cell.classList.add('timecard-absent');
+                leaveText = 'Absent';
+                break;
+            case 'other':
+                cell.classList.add('timecard-other');
+                leaveText = 'Other';
+                break;
+            default:
+                leaveText = '';
+                break;
+        }
+
+        cell.innerHTML = `
+            <div>${selectedDate}</div>
+            <div class="text-xs font-semibold">${leaveText}</div>
+            <div class="text-xs">${leaveComments}</div>
+        `;
+
+        // Update Timecard Details section
+        document.getElementById('timecardOptions').innerHTML = `
+            <h4 class="text-lg font-semibold mb-3">Date: ${selectedDate} July 2024</h4>
+            <p class="text-gray-700">Leave Type: ${leaveText}</p>
+            <p class="text-gray-700">Comments: ${leaveComments}</p>
+        `;
+    }
+</script>
+
 </body>
 </html>

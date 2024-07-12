@@ -59,6 +59,10 @@
             border-radius: 4px;
             cursor: pointer;
         }
+        .selected-date {
+            background-color: #f0f4ff; /* Light blue */
+            border: 2px solid #a5b4fc; /* Blue */
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -68,6 +72,8 @@
         <h2>Employee Timecard</h2>
         <button onclick="generateCalendar()">Refresh Calendar</button>
     </div>
+
+    <h3 class="text-xl font-bold mt-8 mb-4 text-center">Employee Leave Calendar</h3>
 
     <div class="text-center mb-5">
         <p class="text-gray-600">Click on a date to select and fill out your timecard details</p>
@@ -109,19 +115,19 @@
         generateCalendar();
     });
 
-    let selectedDate;
+    let selectedDate = null;
 
     function generateCalendar() {
         const calendarBody = document.getElementById('calendarBody');
         calendarBody.innerHTML = ''; // Clear existing content
-        const daysInMonth = new Date(2024, 7, 0).getDate(); // Assuming July 2024
+        const daysInMonth = new Date(2024, 6, 0).getDate(); // Assuming July 2024
         let date = 1;
 
         for (let i = 0; i < 6; i++) {
             const row = document.createElement('tr');
             for (let j = 0; j < 7; j++) {
                 const cell = document.createElement('td');
-                if (i === 0 && j < new Date(2024, 6, 1).getDay()) {
+                if (i === 0 && j < new Date(2024, 5, 1).getDay()) {
                     cell.innerHTML = "";
                 } else if (date > daysInMonth) {
                     break;
@@ -141,7 +147,16 @@
     }
 
     function selectDate(date) {
+        // Remove highlight from previously selected cell
+        if (selectedDate) {
+            const prevCell = document.getElementById(`day-${selectedDate}`);
+            prevCell.classList.remove('selected-date');
+        }
+
         selectedDate = date;
+        const cell = document.getElementById(`day-${selectedDate}`);
+        cell.classList.add('selected-date');
+
         const timecardOptions = document.getElementById('timecardOptions');
         timecardOptions.innerHTML = `
             <h4 class="text-lg font-semibold mb-3">Date: ${date} July 2024</h4>

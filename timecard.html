@@ -71,7 +71,7 @@
 }
 
 .calendar-cell.selected {
-  background-color: #f0f4f8; /* Light gray background for selected cell */
+  background-color: white; /* White background when selected */
   border: 1px solid #4CAF50; /* Green border for selected cell */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1); /* Soft box-shadow for 3D effect */
   transform: translateY(-2px); /* Lift the cell slightly */
@@ -289,25 +289,26 @@
         </div>
       </div>
     </div>
-<!-- Leave Summary Section -->
-<div class="container my-5">
-  <div class="columns">
-    <div class="column">
-      <div class="card">
-        <header class="card-header">
-          <p class="card-header-title">
-            Leave Summary for Selected Month
-          </p>
-        </header>
-        <div class="card-content">
-          <div id="leaveSummary" class="content">
-            <!-- Leave summary will be dynamically updated here -->
+
+    <!-- Additional Section -->
+    <div class="columns mt-5">
+      <div class="column">
+        <div class="card">
+          <header class="card-header">
+            <p class="card-header-title">
+              Additional Section
+            </p>
+          </header>
+          <div class="card-content">
+            <div class="content">
+              <!-- Your content for the additional section -->
+              <p>This is an additional section below the calendar.</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
   <!-- Footer Section -->
   <footer class="footer">
@@ -321,146 +322,105 @@
   const calendarBody = document.getElementById('calendarBody');
   const dateInput = document.getElementById('date');
   const form = document.getElementById('timecardForm');
-  const leaveSummary = document.getElementById('leaveSummary'); // Reference to the leave summary section
 
   let currentDate = new Date();
+  let timecardData = {}; // Object to store timecard entries
 
-  // Function to calculate leave summary for the selected month
-  function calculateLeaveSummary() {
-    const cells = document.querySelectorAll('.calendar-cell');
-    const summary = {
-      present: 0,
-      absent: 0,
-      weeklyoff: 0,
-      compoff: 0,
-      shortleavepresent: 0,
-      halfday: 0,
-      outdoorworking: 0,
-      outdoortravelling: 0,
-      previlagedleave: 0,
-      paidholiday: 0,
-      unpaidholiday: 0
-    };
-
-    cells.forEach(cell => {
-      const date = cell.dataset.date;
-      const leaveType = cell.querySelector('.leave-type');
-
-      if (date && date.startsWith(`${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`)) {
-        if (leaveType) {
-          const type = leaveType.textContent.trim();
-          summary[type]++;
-        }
-      }
-    });
-
-    return summary;
-  }
-
-  // Function to update leave summary section
-  function updateLeaveSummary() {
-    const summary = calculateLeaveSummary();
-    leaveSummary.innerHTML = '';
-
-    // Display only leave types with usage
-    Object.keys(summary).forEach(type => {
-      if (summary[type] > 0) {
-        const p = document.createElement('p');
-        p.innerHTML = `<strong>${type.charAt(0).toUpperCase() + type.slice(1)}:</strong> ${summary[type]}`;
-        leaveSummary.appendChild(p);
-      }
-    });
-  }
-
-  // Render initial calendar
   function renderCalendar() {
     const month = currentDate.getMonth();
     const year = currentDate.getFullYear();
 
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const firstDay = new Date(year, month, 1).getDay();
-
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    
     calendarBody.innerHTML = '';
 
     let date = 1;
-
     for (let i = 0; i < 6; i++) {
       const row = document.createElement('tr');
-
+      
       for (let j = 0; j < 7; j++) {
-        const cell = document.createElement('td');
-        cell.classList.add('has-text-centered', 'calendar-cell');
-
-        if (i === 0 && j < firstDay) {
-          cell.textContent = '';
+        if (i === 0 && j < firstDayOfMonth) {
+          const cell = document.createElement('td');
+          row.appendChild(cell);
         } else if (date > daysInMonth) {
           break;
         } else {
+          const cell = document.createElement('td');
           cell.textContent = date;
-          cell.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+          cell.classList.add('has-text-centered', 'calendar-cell');
+          cell.addEventListener('click', () => selectDate(cell));
+          
+          const cellDate = new Date(year, month, date);
+          const formattedDate = cellDate.toDateString();
+          
+          // Highlight today's date
+          if (isSameDay(currentDate, cellDate)) {
+            cell.classList.add('today');
+          }
 
-          cell.addEventListener('click', function () {
-            document.querySelectorAll('.calendar-cell').forEach(c => c.classList.remove('selected'));
-            cell.classList.add('selected');
-            dateInput.value = cell.dataset.date;
-
-            // Update leave summary when a cell is selected
-            updateLeaveSummary();
-          });
-
+          // Check if there's a timecard entry for this date
+          if (timecardData[formattedDate]) {
+            const { leaveType } = timecardData[formattedDate];
+            const leaveTypeSpan = document.createElement('span');
+            leaveTypeSpan.classList.add('leave-type', leaveType.toLowerCase());
+            leaveTypeSpan.textContent = leaveType;
+            cell.appendChild(leaveTypeSpan);
+          }
+          
+          row.appendChild(cell);
           date++;
         }
-
-        row.appendChild(cell);
       }
-
+      
       calendarBody.appendChild(row);
-
-      if (date > daysInMonth) {
-        break;
-      }
     }
-
-    // Update leave summary initially
-    updateLeaveSummary();
   }
 
-  renderCalendar();
+  function selectDate(cell) {
+    const selectedDate = parseInt(cell.textContent);
+    currentDate.setDate(selectedDate);
+    dateInput.value = currentDate.toDateString();
+    
+    // Remove 'selected' class from all cells
+    const allCells = document.querySelectorAll('.calendar-cell');
+    allCells.forEach(cell => cell.classList.remove('selected'));
+    
+    // Add 'selected' class to the clicked cell
+    cell.classList.add('selected');
+  }
 
-  // Previous month navigation
-  document.querySelector('.card-header-icon').addEventListener('click', function (e) {
-    e.preventDefault();
-    currentDate.setMonth(currentDate.getMonth() - 1);
+  function isSameDay(date1, date2) {
+    return date1.getFullYear() === date2.getFullYear() &&
+           date1.getMonth() === date2.getMonth() &&
+           date1.getDate() === date2.getDate();
+  }
+
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    
+    const formData = new FormData(form);
+    const date = formData.get('date');
+    const leaveType = formData.get('leave-type');
+    const reason = formData.get('reason');
+    
+    // Update timecard data
+    const formattedDate = new Date(date).toDateString();
+    timecardData[formattedDate] = { leaveType, reason };
+    
+    // Render calendar with updated data
     renderCalendar();
-  });
 
-  // Form submission handling
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    const leaveType = document.getElementById('leave-type').value;
-    const reason = document.getElementById('reason').value;
-    const selectedDate = dateInput.value;
-
-    const selectedCell = document.querySelector(`.calendar-cell[data-date='${selectedDate}']`);
-
-    if (selectedCell) {
-      selectedCell.querySelector('.leave-type')?.remove();
-
-      const leaveBadge = document.createElement('div');
-      leaveBadge.classList.add('leave-type', 'tag', 'is-primary');
-      leaveBadge.textContent = leaveType;
-
-      selectedCell.appendChild(leaveBadge);
-
-      // Update leave summary after adding leave type to calendar cell
-      updateLeaveSummary();
-    }
-
+    // Reset form fields
     form.reset();
+    dateInput.value = ''; // Reset date input
   });
+
+  renderCalendar(); // Initial rendering of calendar
 });
 
 
   </script>
 </body>
 </html>
+

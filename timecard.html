@@ -13,43 +13,142 @@
     body {
       background-color: #f3f4f6; /* Light gray background */
       color: #374151; /* Default text color */
+      margin: 0; /* Remove default body margin */
+      font-family: Arial, sans-serif; /* Optional: Change font */
+    }
+
+    .footer {
+      background-color: #24292e; /* GitHub-like footer background color */
+      color: white; /* White text on footer */
+      text-align: center;
+      padding: 10px; /* Reduced padding */
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      z-index: 1000; /* Ensure above content */
+    }
+
+    .container {
+      max-height: calc(100vh - 60px); /* Adjusted height for scrollability */
+      overflow-y: auto; /* Enable vertical scrolling */
+      padding-bottom: 100px; /* Ensure space below content for footer */
+    }
+
+    .header-bg {
+      background-color: #24292e; /* GitHub-like header background color */
+      color: white; /* White text on header */
+    }
+
+    .header-content {
+      padding: 20px;
+      text-align: center; /* Center align header content */
+    }
+
+    .header-title {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .header-subtitle {
+      font-size: 16px;
     }
 
     .calendar-cell {
-      cursor: pointer;
-      text-align: center;
-      padding: 20px;
-      border: 1px solid #e2e8f0;
-      border-radius: 0.25rem;
-      position: relative;
-      height: 100px;
-      width: calc(100% / 7);
-      box-sizing: border-box;
-      background-color: white; /* White background */
-    }
+  cursor: pointer;
+  text-align: center;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.25rem;
+  position: relative;
+  height: 100px;
+  width: calc(100% / 7);
+  box-sizing: border-box;
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition for background and transform */
+}
 
-    .calendar-cell:hover {
-      background-color: #e5e7eb; /* Light gray hover */
-    }
+.calendar-cell:hover {
+  background-color: #f0f4f8; /* Light gray hover */
+}
 
-    .calendar-cell.selected {
-      background-color: #6b7280; /* Gray selected */
-      color: white; /* White text on selected */
-    }
+.calendar-cell.selected {
+  background-color: #f0f4f8; /* Light gray background for selected cell */
+  border: 1px solid #4CAF50; /* Green border for selected cell */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1); /* Soft box-shadow for 3D effect */
+  transform: translateY(-2px); /* Lift the cell slightly */
+}
 
-    .leave-type {
-      position: absolute;
-      bottom: 5px;
-      right: 5px;
-      background: rgba(76, 175, 80, 0.2);
-      padding: 2px 5px;
-      font-size: 12px;
-      border-radius: 0.25rem;
-      max-width: calc(100% - 10px);
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-    }
+.leave-type {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  padding: 2px 5px;
+  font-size: 12px;
+  border-radius: 0.25rem;
+  max-width: calc(100% - 10px);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.leave-type.present {
+  background-color: rgba(76, 175, 80, 0.4); /* Light green background for 'Present' */
+  color: #2c784e; /* Dark green text */
+}
+
+.leave-type.absent {
+  background-color: rgba(220, 53, 69, 0.4); /* Light red background for 'Absent' */
+  color: #8b2c3d; /* Dark red text */
+}
+
+.leave-type.weeklyoff {
+  background-color: rgba(23, 162, 184, 0.4); /* Light blue background for 'Weekly Off' */
+  color: #0c4b57; /* Dark blue text */
+}
+
+.leave-type.compoff {
+  background-color: rgba(108, 117, 125, 0.4); /* Light gray background for 'Comp Off' */
+  color: #4b5057; /* Dark gray text */
+}
+
+.leave-type.shortleavepresent {
+  background-color: rgba(255, 193, 7, 0.4); /* Light yellow background for 'Short Leave Present' */
+  color: #7f5f00; /* Dark yellow text */
+}
+
+.leave-type.halfday {
+  background-color: rgba(255, 152, 0, 0.4); /* Light orange background for 'Half Day' */
+  color: #9c6000; /* Dark orange text */
+}
+
+.leave-type.outdoorworking {
+  background-color: rgba(23, 162, 184, 0.4); /* Light blue background for 'Outdoor Working' */
+  color: #0c4b57; /* Dark blue text */
+}
+
+.leave-type.outdoortravelling {
+  background-color: rgba(23, 162, 184, 0.4); /* Light blue background for 'Outdoor Travelling' */
+  color: #0c4b57; /* Dark blue text */
+}
+
+.leave-type.previlagedleave {
+  background-color: rgba(108, 117, 125, 0.4); /* Light gray background for 'Previlaged Leave' */
+  color: #4b5057; /* Dark gray text */
+}
+
+.leave-type.paidholiday {
+  background-color: rgba(76, 175, 80, 0.4); /* Light green background for 'Paid Holiday' */
+  color: #2c784e; /* Dark green text */
+}
+
+.leave-type.unpaidholiday {
+  background-color: rgba(220, 53, 69, 0.4); /* Light red background for 'Unpaid Holiday' */
+  color: #8b2c3d; /* Dark red text */
+}
+
+
+
+
+
 
     .form-input,
     .form-select,
@@ -88,25 +187,6 @@
     .form-submit:hover {
       background-color: #45a049;
     }
-
-    .header-bg {
-      background-color: #24292e; /* GitHub-like header background color */
-      color: white; /* White text on header */
-    }
-
-    .header-content {
-      padding: 20px;
-      text-align: center; /* Center align header content */
-    }
-
-    .header-title {
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-
-    .header-subtitle {
-      font-size: 16px;
-    }
   </style>
 </head>
 <body>
@@ -118,6 +198,7 @@
     </div>
   </div>
 
+  <!-- Main Content -->
   <div class="container my-5">
     <div class="columns">
       <div class="column is-two-thirds">
@@ -208,93 +289,178 @@
         </div>
       </div>
     </div>
+<!-- Leave Summary Section -->
+<div class="container my-5">
+  <div class="columns">
+    <div class="column">
+      <div class="card">
+        <header class="card-header">
+          <p class="card-header-title">
+            Leave Summary for Selected Month
+          </p>
+        </header>
+        <div class="card-content">
+          <div id="leaveSummary" class="content">
+            <!-- Leave summary will be dynamically updated here -->
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+</div>
+
+  <!-- Footer Section -->
+  <footer class="footer">
+    <!-- Footer content -->
+    Footer content here
+  </footer>
 
   <!-- Custom JavaScript -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const calendarBody = document.getElementById('calendarBody');
-      const dateInput = document.getElementById('date');
-      const form = document.getElementById('timecardForm');
+  const calendarBody = document.getElementById('calendarBody');
+  const dateInput = document.getElementById('date');
+  const form = document.getElementById('timecardForm');
+  const leaveSummary = document.getElementById('leaveSummary'); // Reference to the leave summary section
 
-      let currentDate = new Date();
+  let currentDate = new Date();
 
-      function renderCalendar() {
-        const month = currentDate.getMonth();
-        const year = currentDate.getFullYear();
+  // Function to calculate leave summary for the selected month
+  function calculateLeaveSummary() {
+    const cells = document.querySelectorAll('.calendar-cell');
+    const summary = {
+      present: 0,
+      absent: 0,
+      weeklyoff: 0,
+      compoff: 0,
+      shortleavepresent: 0,
+      halfday: 0,
+      outdoorworking: 0,
+      outdoortravelling: 0,
+      previlagedleave: 0,
+      paidholiday: 0,
+      unpaidholiday: 0
+    };
 
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const firstDay = new Date(year, month, 1).getDay();
+    cells.forEach(cell => {
+      const date = cell.dataset.date;
+      const leaveType = cell.querySelector('.leave-type');
 
-        calendarBody.innerHTML = '';
-
-        let date = 1;
-
-        for (let i = 0; i < 6; i++) {
-          const row = document.createElement('tr');
-
-          for (let j = 0; j < 7; j++) {
-            const cell = document.createElement('td');
-            cell.classList.add('has-text-centered', 'calendar-cell');
-
-            if (i === 0 && j < firstDay) {
-              cell.textContent = '';
-            } else if (date > daysInMonth) {
-              break;
-            } else {
-              cell.textContent = date;
-              cell.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
-
-              cell.addEventListener('click', function () {
-                document.querySelectorAll('.calendar-cell').forEach(c => c.classList.remove('selected'));
-                cell.classList.add('selected');
-                dateInput.value = cell.dataset.date;
-              });
-
-              date++;
-            }
-
-            row.appendChild(cell);
-          }
-
-          calendarBody.appendChild(row);
-
-          if (date > daysInMonth) {
-            break;
-          }
+      if (date && date.startsWith(`${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`)) {
+        if (leaveType) {
+          const type = leaveType.textContent.trim();
+          summary[type]++;
         }
       }
+    });
 
-      renderCalendar();
+    return summary;
+  }
 
-      document.querySelector('.card-header-icon').addEventListener('click', function (e) {
-        e.preventDefault();
-        currentDate.setMonth(currentDate.getMonth() - 1);
-        renderCalendar();
-      });
+  // Function to update leave summary section
+  function updateLeaveSummary() {
+    const summary = calculateLeaveSummary();
+    leaveSummary.innerHTML = '';
 
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        const leaveType = document.getElementById('leave-type').value;
-        const reason = document.getElementById('reason').value;
-        const selectedDate = dateInput.value;
+    // Display only leave types with usage
+    Object.keys(summary).forEach(type => {
+      if (summary[type] > 0) {
+        const p = document.createElement('p');
+        p.innerHTML = `<strong>${type.charAt(0).toUpperCase() + type.slice(1)}:</strong> ${summary[type]}`;
+        leaveSummary.appendChild(p);
+      }
+    });
+  }
 
-        const selectedCell = document.querySelector(`.calendar-cell[data-date='${selectedDate}']`);
+  // Render initial calendar
+  function renderCalendar() {
+    const month = currentDate.getMonth();
+    const year = currentDate.getFullYear();
 
-        if (selectedCell) {
-          selectedCell.querySelector('.leave-type')?.remove();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
 
-          const leaveBadge = document.createElement('div');
-          leaveBadge.classList.add('leave-type', 'tag', 'is-primary');
-          leaveBadge.textContent = leaveType;
+    calendarBody.innerHTML = '';
 
-          selectedCell.appendChild(leaveBadge);
+    let date = 1;
+
+    for (let i = 0; i < 6; i++) {
+      const row = document.createElement('tr');
+
+      for (let j = 0; j < 7; j++) {
+        const cell = document.createElement('td');
+        cell.classList.add('has-text-centered', 'calendar-cell');
+
+        if (i === 0 && j < firstDay) {
+          cell.textContent = '';
+        } else if (date > daysInMonth) {
+          break;
+        } else {
+          cell.textContent = date;
+          cell.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+
+          cell.addEventListener('click', function () {
+            document.querySelectorAll('.calendar-cell').forEach(c => c.classList.remove('selected'));
+            cell.classList.add('selected');
+            dateInput.value = cell.dataset.date;
+
+            // Update leave summary when a cell is selected
+            updateLeaveSummary();
+          });
+
+          date++;
         }
 
-        form.reset();
-      });
-    });
+        row.appendChild(cell);
+      }
+
+      calendarBody.appendChild(row);
+
+      if (date > daysInMonth) {
+        break;
+      }
+    }
+
+    // Update leave summary initially
+    updateLeaveSummary();
+  }
+
+  renderCalendar();
+
+  // Previous month navigation
+  document.querySelector('.card-header-icon').addEventListener('click', function (e) {
+    e.preventDefault();
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar();
+  });
+
+  // Form submission handling
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const leaveType = document.getElementById('leave-type').value;
+    const reason = document.getElementById('reason').value;
+    const selectedDate = dateInput.value;
+
+    const selectedCell = document.querySelector(`.calendar-cell[data-date='${selectedDate}']`);
+
+    if (selectedCell) {
+      selectedCell.querySelector('.leave-type')?.remove();
+
+      const leaveBadge = document.createElement('div');
+      leaveBadge.classList.add('leave-type', 'tag', 'is-primary');
+      leaveBadge.textContent = leaveType;
+
+      selectedCell.appendChild(leaveBadge);
+
+      // Update leave summary after adding leave type to calendar cell
+      updateLeaveSummary();
+    }
+
+    form.reset();
+  });
+});
+
+
   </script>
 </body>
 </html>
-
